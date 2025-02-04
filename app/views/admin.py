@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException
 from app.models.users import Users
 from app.db.connection import SessionLocal, get_db
 from typing import Annotated
 from starlette import status
-from .auth import get_current_user, admin_required
+from .auth import admin_required
 from sqlalchemy.orm import Session
 
 router = APIRouter(
@@ -12,7 +12,6 @@ router = APIRouter(
 )
 
 db_dependency = Annotated[Session, Depends(get_db)]
-user_dependency = Annotated[dict, Depends(get_current_user)]
 admin_dependency = Annotated[bool, Depends(admin_required)]
 
 
