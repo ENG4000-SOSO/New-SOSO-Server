@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.views import example, auth
+from app.views import example, auth, users
 
 app = FastAPI()
 
@@ -10,3 +10,4 @@ def read_root():
 # Include Additional Routers (Views)
 app.include_router(example.router)
 app.include_router(auth.router)
+app.include_router(users.router)

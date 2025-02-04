@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import Annotated
+from typing import Annotated, Optional
 from sqlalchemy.orm import Session
 from starlette import status
 from app.db.connection import SessionLocal, get_db
@@ -29,7 +29,8 @@ class CreateUserRequest(BaseModel):
     last_name: str
     email: str
     password: str
-    role: str
+    role: Optional[str] = "viewer"  # Default to 'viewer'
+    is_active: Optional[bool] = True  # Default to True
 
 class Token(BaseModel):
     access_token: str
@@ -65,14 +66,15 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(db: db_dependency, create_user_request: CreateUserRequest):
+async def register_user(db: db_dependency, create_user_request: CreateUserRequest):
     create_user_model = Users(
         username = create_user_request.username,
         first_name = create_user_request.first_name,
         last_name = create_user_request.last_name,
         email = create_user_request.email,
         hashed_password = bcrypt_context.hash(create_user_request.password),
-        role = create_user_request.role
+        role = create_user_request.role or "viewer",
+        is_active= create_user_request.is_active if create_user_request.is_active is not None else True
     )
     db.add(create_user_model)
     db.commit()

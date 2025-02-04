@@ -4,3 +4,9 @@ __pycache__/
 # Virtual Environment
 venv/
 
+# Alembic
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+
+# Environment variables and settings
+.env
