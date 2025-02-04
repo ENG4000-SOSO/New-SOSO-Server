@@ -63,6 +63,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         return {'username': username, 'id': user_id, 'user_role': user_role}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate user.')
+    
+# Add method to check admin role
+def admin_required(current_user: Users = Depends(get_current_user)):
+    if current_user.get('user_role') != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    return True
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
