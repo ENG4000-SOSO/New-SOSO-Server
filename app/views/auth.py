@@ -70,6 +70,17 @@ def admin_required(current_user: Users = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return True
 
+# Add method to check operator role
+def operator_required(current_user: Users = Depends(get_current_user)):
+    if current_user.get('user_role') != "operator":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Operator access required")
+    return True
+
+# Add method to check viewer role
+def viewer_required(current_user: Users = Depends(get_current_user)):
+    if current_user.get('user_role') != "viewer":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Viewer access required")
+    return True
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def register_user(db: db_dependency, create_user_request: CreateUserRequest):
