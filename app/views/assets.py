@@ -26,6 +26,16 @@ class CreateSatelliteRequest(BaseModel):
     is_illuminated: bool
     under_outage: bool
 
+class CreateGroundStationRequest(BaseModel):
+    ground_station_name: str
+    latitude: float
+    longitude: float
+    elevation: float
+    station_mask: float
+    uplink_rate: float
+    downlink_rate: float
+    under_outage: bool
+
 
 # Satellite API Endpoints
 
@@ -64,4 +74,42 @@ def get_satellite(db: db_dependency, user: user_dependency, operator: operator_d
     satellite_model = db.query(Satellite).filter(Satellite.id == satellite_id).first()
     if satellite_model is not None:
         return satellite_model
+    raise HTTPException(status_code=404, detail='Item not found')
+
+# Ground Station API Endpoints
+# Add a satellite
+@router.post("/ground_station", status_code=status.HTTP_201_CREATED)
+async def create_ground_station(db: db_dependency, user: user_dependency, operator: operator_dependency, create_ground_station_request: CreateGroundStationRequest):
+    if user is None:
+        raise HTTPException(status_code=401,detail='Authentication Failed')
+    
+    create_ground_station_model = GroundStation(
+        ground_station_name = create_ground_station_request.ground_station_name,
+        latitude = create_ground_station_request.latitude,
+        longitude = create_ground_station_request.longitude,
+        elevation = create_ground_station_request.elevation,
+        station_mask = create_ground_station_request.station_mask,
+        uplink_rate = create_ground_station_request.uplink_rate,
+        downlink_rate = create_ground_station_request.downlink_rate,
+        under_outage = create_ground_station_request.under_outage
+    )
+    db.add(create_ground_station_model)
+    db.commit()
+
+# Get all ground stations
+@router.get("/ground_stations", status_code=status.HTTP_200_OK)
+def fetch_all_ground_stations(db: db_dependency, user: user_dependency, operator: operator_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
+    ground_stations = db.query(GroundStation).all()
+    return {"GroundStation": ground_stations}
+
+# Get a single ground station by ID
+@router.get("/ground_station/{ground_station_id}", status_code=status.HTTP_200_OK)
+def get_satellite(db: db_dependency, user: user_dependency, operator: operator_dependency, ground_station_id: int):
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication Failed")
+    ground_station_model = db.query(GroundStation).filter(GroundStation.id == ground_station_id).first()
+    if ground_station_model is not None:
+        return ground_station_model
     raise HTTPException(status_code=404, detail='Item not found')
