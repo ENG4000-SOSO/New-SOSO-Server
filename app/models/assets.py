@@ -7,10 +7,12 @@ class Satellite(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     satellite_name = Column(String, nullable=False)
-    storage_capacity = Column(Double, nullable=False)
-    power_capacity = Column(Double, nullable=False)
-    fov_max = Column(Double, nullable=False)
-    fov_min = Column(Double, nullable=False)
+    tle_line1 = Column(String, nullable=False)
+    tle_line2 = Column(String, nullable=False)
+    storage_capacity = Column(Double)
+    power_capacity = Column(Double)
+    fov_max = Column(Double)
+    fov_min = Column(Double)
     is_illuminated = Column(Boolean, default=False)
     under_outage = Column(Boolean, default=False)
 
@@ -22,8 +24,8 @@ class GroundStation(Base):
     latitude = Column(Double, nullable=False)
     longitude = Column(Double, nullable=False)
     elevation = Column(Double, nullable=False)
-    station_mask = Column(Double, nullable=False)
+    send_mask = Column(Double)
+    receive_mask = Column(Double)
     uplink_rate = Column(Double, nullable=False)
     downlink_rate = Column(Double, nullable=False)
     under_outage = Column(Boolean, default=False)
-    

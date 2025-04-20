@@ -1,0 +1,10 @@
+services:
+  database:
+    image: 'postgres:latest'
+    container_name: soso-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test1234
+      POSTGRES_DB: SOSOApplicationDatabase
