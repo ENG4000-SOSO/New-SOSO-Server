@@ -1,6 +1,15 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TYPE user_role AS ENUM ('admin', 'operator', 'viewer');
 
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS satellite;
+DROP TABLE IF EXISTS ground_station;
+DROP TABLE IF EXISTS image_request;
+DROP TABLE IF EXISTS activity_request;
+DROP TABLE IF EXISTS outage_request;
+DROP TABLE IF EXISTS mission CASCADE;
+DROP TABLE IF EXISTS schedule_request;
 
 CREATE TABLE users (
     id SERIAL,
@@ -13,8 +22,6 @@ CREATE TABLE users (
     is_active BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
 );
-
-DROP TABLE IF EXISTS satellite;
 
 CREATE TABLE satellite (
     id SERIAL PRIMARY KEY,
@@ -29,8 +36,6 @@ CREATE TABLE satellite (
     under_outage BOOLEAN DEFAULT FALSE
 );
 
-DROP TABLE IF EXISTS ground_station;
-
 CREATE TABLE ground_station (
     id SERIAL PRIMARY KEY,
     ground_station_name VARCHAR(255) UNIQUE NOT NULL,
@@ -44,7 +49,12 @@ CREATE TABLE ground_station (
     under_outage BOOLEAN DEFAULT FALSE
 );
 
-DROP TABLE IF EXISTS image_request;
+CREATE TABLE mission (
+    id SERIAL PRIMARY KEY,
+    mission_name VARCHAR NOT NULL,
+    mission_start TIMESTAMP NOT NULL,
+    mission_end TIMESTAMP NOT NULL
+);
 
 CREATE TABLE image_request (
     id SERIAL PRIMARY KEY,
@@ -64,8 +74,6 @@ CREATE TABLE image_request (
     FOREIGN KEY (mission_id) REFERENCES mission(id) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS activity_request;
-
 CREATE TABLE activity_request (
     id SERIAL PRIMARY KEY,
     target VARCHAR NOT NULL,
@@ -79,8 +87,6 @@ CREATE TABLE activity_request (
     payload_outage VARCHAR NOT NULL
 );
 
-DROP TABLE IF EXISTS outage_request;
-
 CREATE TABLE outage_request (
     id SERIAL PRIMARY KEY,
     target VARCHAR NOT NULL,
@@ -89,11 +95,13 @@ CREATE TABLE outage_request (
     window_end TIMESTAMP NOT NULL
 );
 
-DROP TABLE IF EXISTS mission CASCADE;
-
-CREATE TABLE mission (
-    id SERIAL PRIMARY KEY,
-    mission_name VARCHAR NOT NULL,
-    mission_start TIMESTAMP NOT NULL,
-    mission_end TIMESTAMP NOT NULL
+CREATE TABLE schedule_request (
+    id UUID PRIMARY KEY,
+    mission_id INTEGER NOT NULL,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    input_object_key VARCHAR,
+    output_object_key VARCHAR,
+    status VARCHAR,
+    FOREIGN KEY (mission_id) REFERENCES mission(id) ON DELETE CASCADE
 );

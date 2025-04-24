@@ -1,6 +1,23 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.views import auth, users, admin, assets, maintenance, imaging, outage, mission
+from app.views import \
+    admin, \
+    auth, \
+    assets, \
+    imaging, \
+    maintenance, \
+    mission, \
+    outage, \
+    schedule, \
+    users
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 
 app = FastAPI()
 
@@ -25,3 +42,4 @@ app.include_router(maintenance.router)
 app.include_router(imaging.router)
 app.include_router(outage.router)
 app.include_router(mission.router)
+app.include_router(schedule.router)
