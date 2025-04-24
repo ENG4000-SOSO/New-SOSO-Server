@@ -8,3 +8,15 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: test1234
       POSTGRES_DB: SOSOApplicationDatabase
+  backend:
+    build: .
+    container_name: soso-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - AWS_REGION_NAME=us-east-1
+      - S3_BUCKET_NAME=soso-storage
+      - DYNAMODB_TABLE_NAME=soso-schedule-metadata
