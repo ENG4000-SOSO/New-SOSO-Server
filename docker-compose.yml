@@ -11,6 +11,8 @@ services:
   backend:
     build: .
     container_name: soso-backend
+    depends_on:
+      - database
     ports:
       - "8000:8000"
     volumes:
@@ -20,3 +22,8 @@ services:
       - AWS_REGION_NAME=us-east-1
       - S3_BUCKET_NAME=soso-storage
       - DYNAMODB_TABLE_NAME=soso-schedule-metadata
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test1234
+      - POSTGRES_HOST=soso-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=SOSOApplicationDatabase
