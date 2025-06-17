@@ -3,7 +3,7 @@ from app.models.users import Users
 from app.db.connection import SessionLocal, get_db
 from typing import Annotated
 from starlette import status
-from .auth import admin_required
+from app.utils.auth import admin_required
 from sqlalchemy.orm import Session
 
 router = APIRouter(
@@ -28,12 +28,13 @@ def change_user_role(user_id: int , new_role: str, db: db_dependency,admin: admi
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     if new_role not in ["admin", "operator", "viewer"]:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid role")
-    
-    user.role = new_role
+    user = db.query(Users)\
+        .filter(Users.id == user_id)\
+        .update({"role": new_role})
     db.commit()
     db.refresh(user)
-    
-    
+
+
 @router.delete("/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user_account(user_id: int, db: db_dependency, admin: admin_dependency):
     user = db.query(Users).filter(Users.id == user_id).first()
@@ -41,4 +42,3 @@ def delete_user_account(user_id: int, db: db_dependency, admin: admin_dependency
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(user)
     db.commit()
-    
